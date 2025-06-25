@@ -1,0 +1,46 @@
+
+version: '3'
+
+services:
+  charge_request:
+    build: ./charge_request_service
+    ports:
+      - "5001:5001"
+    depends_on:
+      - load_balancer_service
+
+  load_balancer_service:
+    build: ./load_balancer_service
+    ports:
+      - "6000:6000"
+    depends_on:
+      - substation1
+      - substation2
+      - substation3
+
+  substation1:
+    build: ./substation_service
+    ports:
+      - "8001:8000"
+
+  substation2:
+    build: ./substation_service
+    ports:
+      - "8002:8000"
+
+  substation3:
+    build: ./substation_service
+    ports:
+      - "8003:8000"
+
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3000:3000"
